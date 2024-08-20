@@ -1,5 +1,8 @@
-<p>posts works!</p>
+<p>Count</p>
+<p>{{count}}</p>
 <div *ngFor="let post of posts">
     <span class="display-3 fw-bold">{{post.title}}</span>
     <span>{{post.content}}</span>
+    <button (click)="deletePosts(post.id)">Delete</button>
 </div>
+<button (click)="postPosts()">Save</button>
