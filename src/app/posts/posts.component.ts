@@ -10,6 +10,10 @@ import { map } from 'rxjs';
 export class PostsComponent implements OnInit {
     posts: any;
     count!: number;
+    formData = {
+        title: '',
+        content: ''
+    };
 
     constructor(private mainService: MainService) { }
 
@@ -39,13 +43,17 @@ export class PostsComponent implements OnInit {
 
     postPosts() {
         this.mainService.postPosts({
-            title: 'Posts',
-            content: 'All posts here!'
+            title: this.formData.title,
+            content: this.formData.content,
         })
-            .subscribe((res) => {
-                console.log(res);
-                this.getPosts();
-            })
+        .subscribe((res) => {
+            console.log(res);
+            this.getPosts();
+            this.formData = {
+                title: '',
+                content: ''
+            };
+        })
     }
 
     deletePosts(id: any) {

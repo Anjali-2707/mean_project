@@ -40,13 +40,13 @@ app.post('/api/posts', (req, res, next) => {
         title: req.body.title,
         content: req.body.content
     });
-    post.save(); //mongoose methods
-    console.log(post);
-    res.status(201).json({
-        message: 'Post added',
-        // posts: posts
-    });
-    // next();
+    post.save().then((result) => {
+        console.log(post);
+        res.status(201).json({
+            message: 'Post added',
+            postId: result._id
+        });
+    }); //mongoose methods
 })
 
 //fetching the data from db
