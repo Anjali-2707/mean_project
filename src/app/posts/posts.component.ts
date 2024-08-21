@@ -14,6 +14,8 @@ export class PostsComponent implements OnInit {
         title: '',
         content: ''
     };
+    targetedId: string = '';
+    isLoading = false;
 
     constructor(private mainService: MainService) { }
 
@@ -24,6 +26,7 @@ export class PostsComponent implements OnInit {
     }
 
     getPosts() {
+        this.isLoading = true;
         this.mainService.getPosts()
             .pipe(map(postData => {
                 return postData.posts.map((post: { title: any; content: any; _id: any; }) => {
@@ -38,10 +41,21 @@ export class PostsComponent implements OnInit {
                 console.log(res);
                 this.posts = res;
                 this.count = res.length;
+                this.isLoading = false;
             })
     }
 
-    postPosts() {
+    onSave() {
+        console.log(this.targetedId);
+        
+        if (!this.targetedId) {
+            this.postPosts();
+        } else {
+            this.callEditPosts(this.targetedId);
+        }
+    }
+
+    postPosts(){
         this.mainService.postPosts({
             title: this.formData.title,
             content: this.formData.content,
@@ -56,11 +70,43 @@ export class PostsComponent implements OnInit {
         })
     }
 
+    callEditPosts(id: string){
+        this.mainService.editPosts(id, {
+            id,
+            title: this.formData.title,
+            content: this.formData.content,
+        })
+        .subscribe((res) => {
+            console.log(res);
+            this.getPosts();
+            this.formData = {
+                title: '',
+                content: ''
+            };
+            this.targetedId = '';
+        })
+    }
+
     deletePosts(id: any) {
         this.mainService.deletePosts(id)
         .subscribe((res) => {
             console.log(res);
             this.getPosts();
         })
+    }
+
+    editPosts(post:any) {
+        console.log(post);
+        
+        this.formData = {
+            title: post.title,
+            content: post.content
+        };
+        this.targetedId = post.id;
+        // this.mainService.deletePosts(post.id)
+        // .subscribe((res) => {
+        //     console.log(res);
+        //     this.getPosts();
+        // })   
     }
 }

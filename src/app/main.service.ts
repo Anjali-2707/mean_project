@@ -21,4 +21,8 @@ export class MainService {
   deletePosts(id: any): Observable<any> {
     return this.http.delete('http://localhost:3000/api/posts/'+ id);
   }
+
+  editPosts(id:string, data:any) {
+    return this.http.put('http://localhost:3000/api/posts/'+ id, data);
+  }
 }

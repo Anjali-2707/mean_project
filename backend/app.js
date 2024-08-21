@@ -28,14 +28,13 @@ app.use((req, res, next) => {
         'Access-Control-Allow-Headers',
         "Origin, X-Requested-With, Content-Type, Accept"
     );
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS', 'PATCH');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
     next();
 })
 
 //saving the data in db
 //respond only for 'post'
 app.post('/api/posts', (req, res, next) => {
-    // const post = req.body;
     const post = new Post({
         title: req.body.title,
         content: req.body.content
@@ -45,6 +44,22 @@ app.post('/api/posts', (req, res, next) => {
         res.status(201).json({
             message: 'Post added',
             postId: result._id
+        });
+    }); //mongoose methods
+})
+
+//To edit the existing record
+app.put('/api/posts/:id', (req, res, next) => {
+    const post = new Post({
+        _id: req.params.id, //fetching id from url
+        title: req.body.title,
+        content: req.body.content
+    });
+    Post.updateOne({ _id: req.params.id }, post).then((result) => {
+        console.log(result);
+        res.status(200).json({
+            message: 'Post updated!',
+            // postId: result._id
         });
     }); //mongoose methods
 })
@@ -60,9 +75,9 @@ app.get('/api/posts', (req, res, next) => {
                 posts: docs
             });
         });
-    // next();
 });
 
+//delete the row/post
 app.delete('/api/posts/:id', (req, res, next) => {
     Post.deleteOne({ _id: req.params.id })
         .then(result => {
@@ -72,12 +87,5 @@ app.delete('/api/posts/:id', (req, res, next) => {
             });
         });
 });
-
-// app.use((req, res, next) => {
-//     //to send response
-//     res.status(200).json({
-//         message: 'Posts fetched succesfully',
-//     });
-// });
 
 module.exports = app;
