@@ -2,7 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const Post = require('./models/post');
+const postsRoutes = require("./routes/posts");
+const userRoutes = require("./routes/user");
 const app = express();
 app.use(cors());
 //connect node app to mongodb
@@ -30,62 +31,10 @@ app.use((req, res, next) => {
     );
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
     next();
-})
-
-//saving the data in db
-//respond only for 'post'
-app.post('/api/posts', (req, res, next) => {
-    const post = new Post({
-        title: req.body.title,
-        content: req.body.content
-    });
-    post.save().then((result) => {
-        console.log(post);
-        res.status(201).json({
-            message: 'Post added',
-            postId: result._id
-        });
-    }); //mongoose methods
-})
-
-//To edit the existing record
-app.put('/api/posts/:id', (req, res, next) => {
-    const post = new Post({
-        _id: req.params.id, //fetching id from url
-        title: req.body.title,
-        content: req.body.content
-    });
-    Post.updateOne({ _id: req.params.id }, post).then((result) => {
-        console.log(result);
-        res.status(200).json({
-            message: 'Post updated!',
-            // postId: result._id
-        });
-    }); //mongoose methods
-})
-
-//fetching the data from db
-//middleware
-app.get('/api/posts', (req, res, next) => {
-    Post.find() //return a promise
-        .then(docs => {
-            console.log(docs);
-            res.status(200).json({
-                message: 'Posts fetched succesfully',
-                posts: docs
-            });
-        });
 });
 
-//delete the row/post
-app.delete('/api/posts/:id', (req, res, next) => {
-    Post.deleteOne({ _id: req.params.id })
-        .then(result => {
-            console.log(result);
-            res.status(200).json({
-                message: 'Posts deleted succesfully',
-            });
-        });
-});
+//call all posts routes here in main file
+app.use("/api/posts", postsRoutes);
+app.use("/api/user", userRoutes);
 
 module.exports = app;
